@@ -1,0 +1,159 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #202124;
+  background: #f4f6f8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+header,
+main,
+footer {
+  width: min(100% - 2rem, 900px);
+  margin-inline: auto;
+}
+
+header {
+  padding-block: 1.5rem 1rem;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+main {
+  display: grid;
+  gap: 1rem;
+}
+
+section {
+  min-width: 0;
+  padding: 1rem;
+  background: #ffffff;
+  border: 1px solid #d8dee5;
+  border-radius: 0.75rem;
+}
+
+form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+input,
+button {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+  border: 1px solid #89939e;
+  border-radius: 0.375rem;
+}
+
+input {
+  min-width: 0;
+  background: #ffffff;
+  color: #202124;
+}
+
+button {
+  cursor: pointer;
+  background: #174ea6;
+  color: #ffffff;
+  border-color: #174ea6;
+}
+
+button:hover:not(:disabled) {
+  background: #123b7a;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid #f9ab00;
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+#cancel-btn,
+#stop-btn {
+  margin-top: 0.75rem;
+}
+
+#queue-status,
+#visualizer-status {
+  overflow-wrap: anywhere;
+}
+
+#track-queue {
+  padding-left: 1.5rem;
+  overflow-wrap: anywhere;
+}
+
+#track-queue li {
+  padding-block: 0.4rem;
+}
+
+#audio-visualizer {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 1;
+  border: 1px solid #d8dee5;
+  border-radius: 0.375rem;
+  background: #101820;
+}
+
+footer {
+  padding-block: 1.5rem;
+  color: #505862;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  header,
+  main,
+  footer {
+    width: min(100% - 3rem, 900px);
+  }
+
+  section {
+    padding: 1.5rem;
+  }
+
+  form {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  form button {
+    width: auto;
+  }
+
+  #cancel-btn,
+  #stop-btn {
+    width: auto;
+  }
+}
