@@ -20,7 +20,6 @@ export class AudioEngine {
     this.analyser = this.audioContext.createAnalyser();
     this.analyser.fftSize = 512;
     this.analyser.smoothingTimeConstant = 0.8;
-
     this.analyser.connect(this.audioContext.destination);
 
     this.frequencyData = new Uint8Array(
@@ -50,14 +49,24 @@ export class AudioEngine {
   }
 
   stop() {
-    if (!this.activeSource) {
+    const source = this.activeSource;
+
+    if (!source) {
       return;
     }
 
-    const source = this.activeSource;
     this.activeSource = null;
-    source.stop();
-    source.disconnect();
+    source.onended = null;
+
+    try {
+      source.stop();
+    } catch (error) {
+      if (error.name !== "InvalidStateError") {
+        throw error;
+      }
+    } finally {
+      source.disconnect();
+    }
   }
 
   getFrequencyData() {
@@ -73,10 +82,15 @@ export class AudioEngine {
     this.stop();
 
     if (this.audioContext) {
-      await this.audioContext.close();
+      const context = this.audioContext;
+
       this.audioContext = null;
       this.analyser = null;
       this.frequencyData = null;
+
+      if (context.state !== "closed") {
+        await context.close();
+      }
     }
   }
 }
