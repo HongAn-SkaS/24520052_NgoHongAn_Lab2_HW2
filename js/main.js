@@ -28,7 +28,7 @@ trackForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  trackUrlInput.disabled = true;
+
   queueStatus.textContent = "Loading audio...";
   cancelButton.disabled = false;
 
@@ -82,7 +82,6 @@ trackForm.addEventListener("submit", async (event) => {
         ? "Audio task cancelled."
         : `Loading failed: ${error.message}`;
   } finally {
-    trackUrlInput.disabled = false;
     cancelButton.disabled = !audioQueue || !audioQueue.activeTask;
   }
 });
@@ -129,7 +128,7 @@ cancelButton.addEventListener("click", () => {
 
 window.addEventListener("beforeunload", () => {
   visualizer.destroy();
-  audioEngine.stop();
+  void audioEngine.close();
 });
 
 stopButton.disabled = true;
