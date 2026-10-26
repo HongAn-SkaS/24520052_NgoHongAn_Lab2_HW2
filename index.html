@@ -1,0 +1,70 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A concurrent FIFO audio queue and frequency visualizer.">
+  <title>Audio Queue Visualizer</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Audio Queue Visualizer</h1>
+    <p>Load, queue, and visualize audio tracks.</p>
+  </header>
+
+  <main>
+    <section aria-labelledby="tracks-heading">
+      <h2 id="tracks-heading">Audio Tracks</h2>
+
+      <form id="track-form">
+        <label for="track-url">Audio URL</label>
+        <input
+          id="track-url"
+          name="trackUrl"
+          type="url"
+          placeholder="https://example.com/audio.mp3"
+          required
+        >
+        <button type="submit">Add to Queue</button>
+      </form>
+
+      <button id="cancel-btn" type="button" disabled>
+        Cancel Active Download
+      </button>
+
+      <p id="queue-status" role="status" aria-live="polite">
+        Queue is empty.
+      </p>
+
+      <ol id="track-queue" aria-label="Queued audio tracks"></ol>
+    </section>
+
+    <section aria-labelledby="playback-heading">
+      <h2 id="playback-heading">Playback</h2>
+      <button id="play-btn" type="button" disabled>Play</button>
+      <button id="stop-btn" type="button" disabled>Stop</button>
+    </section>
+
+    <section aria-labelledby="visualizer-heading">
+      <h2 id="visualizer-heading">Frequency Visualizer</h2>
+      <canvas
+        id="audio-visualizer"
+        width="600"
+        height="200"
+        aria-label="Live audio frequency visualization"
+        role="img"
+      ></canvas>
+      <p id="visualizer-status" role="status">
+        Waiting for audio.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>HW2 — Concurrent FIFO Audio Visualizer Queue Engine</p>
+  </footer>
+</body>
+</html>
