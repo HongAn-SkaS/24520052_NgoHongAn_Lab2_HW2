@@ -4,21 +4,66 @@ export class AudioTaskQueue {
     this.queue = [];
     this.isProcessing = false;
     this.activeController = null;
+    this.activeTask = null;
   }
 
   enqueue(trackUrl) {
     const controller = new AbortController();
 
     return new Promise((resolve, reject) => {
-      this.queue.push({
+      const task = {
         trackUrl,
         controller,
         resolve,
-        reject
-      });
+        reject,
+        settled: false
+      };
 
+      this.queue.push(task);
       this.processNext();
     });
+  }
+
+  settleTask(task, error, audioBuffer = null) {
+    if (task.settled) {
+      return;
+    }
+
+    task.settled = true;
+
+    if (error) {
+      task.reject(error);
+    } else {
+      task.resolve(audioBuffer);
+    }
+  }
+
+  cancelTask(task) {
+    if (!task || task.settled) {
+      return;
+    }
+
+    task.controller.abort();
+
+    const error = new DOMException(
+      "Audio task cancelled",
+      "AbortError"
+    );
+
+    this.settleTask(task, error);
+  }
+
+  cancelActive() {
+    this.cancelTask(this.activeTask);
+  }
+
+  cancelPending() {
+    const pendingTasks = this.queue;
+    this.queue = [];
+
+    for (const task of pendingTasks) {
+      this.cancelTask(task);
+    }
   }
 
   async processNext() {
@@ -29,9 +74,14 @@ export class AudioTaskQueue {
     this.isProcessing = true;
 
     const task = this.queue.shift();
+    this.activeTask = task;
     this.activeController = task.controller;
 
     try {
+      if (task.controller.signal.aborted) {
+        throw new DOMException("Audio task cancelled", "AbortError");
+      }
+
       const response = await fetch(task.trackUrl, {
         signal: task.controller.signal
       });
@@ -43,26 +93,25 @@ export class AudioTaskQueue {
       const audioData = await response.arrayBuffer();
 
       if (task.controller.signal.aborted) {
-        throw new DOMException("Task cancelled", "AbortError");
+        throw new DOMException("Audio task cancelled", "AbortError");
       }
 
       const audioBuffer = await this.audioContext.decodeAudioData(
         audioData
       );
 
-      task.resolve(audioBuffer);
+      if (task.controller.signal.aborted) {
+        throw new DOMException("Audio task cancelled", "AbortError");
+      }
+
+      this.settleTask(task, null, audioBuffer);
     } catch (error) {
-      task.reject(error);
+      this.settleTask(task, error);
     } finally {
+      this.activeTask = null;
       this.activeController = null;
       this.isProcessing = false;
       this.processNext();
-    }
-  }
-
-  cancelActive() {
-    if (this.activeController) {
-      this.activeController.abort();
     }
   }
 }
